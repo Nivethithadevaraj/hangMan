@@ -1,3 +1,5 @@
+using System;
+
 namespace HangmanGame.Model
 {
     public class User

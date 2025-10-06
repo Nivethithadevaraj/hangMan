@@ -5,46 +5,36 @@ namespace HangmanGame.Model
 {
     public class GameEngine
     {
-        private readonly IWordRepository _repository;
-        private GameState _state;
+        private readonly IWordRepository _wordRepository;
+        private GameState? _state;
+        private const int DEFAULT_MAX_ATTEMPTS = 3;
+        private readonly Random _random = new();
 
-        public GameEngine(IWordRepository repository)
+        public GameEngine(IWordRepository repo)
         {
-            _repository = repository;
+            _wordRepository = repo;
         }
 
+        // Starts a new game for the given difficulty (throws if no words)
         public GameState StartNewGame(string difficulty)
         {
-            var words = _repository.GetWords(difficulty);
-            if (words.Count == 0)
-            {
+            var list = _wordRepository.GetWordsByDifficulty(difficulty ?? "");
+            if (list == null || list.Count == 0)
                 throw new InvalidOperationException($"No words found for difficulty '{difficulty}'");
-            }
 
-            var random = new Random();
-            string word = words[random.Next(words.Count)];
-            _state = new GameState(word, 3);
+            string chosen = list[_random.Next(list.Count)];
+            _state = new GameState(chosen, DEFAULT_MAX_ATTEMPTS);
             return _state;
         }
 
-        public bool IsGameOver()
+        public bool MakeGuess(char guess)
         {
-            return _state != null && _state.IsGameOver();
+            if (_state == null) throw new InvalidOperationException("Game not started.");
+            return _state.ProcessGuess(guess);
         }
 
-        public bool IsWin()
-        {
-            return _state != null && _state.IsWin();
-        }
-
-        public void MakeGuess(char guess)
-        {
-            _state?.ProcessGuess(guess);
-        }
-
-        public GameState GetState()
-        {
-            return _state;
-        }
+        public bool IsGameOver() => _state == null ? true : _state.IsGameOver();
+        public bool IsWin() => _state == null ? false : _state.IsWin();
+        public GameState GetState() => _state ?? throw new InvalidOperationException("Game not started.");
     }
 }

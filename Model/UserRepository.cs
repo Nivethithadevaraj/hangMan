@@ -1,41 +1,41 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 namespace HangmanGame.Model
 {
     public class UserRepository
     {
-        private readonly string _filePath = Path.Combine("Data", "login.csv");
+        private readonly string _filePath;
 
-        public List<User> GetAllUsers()
+        public UserRepository(string filePath)
         {
-            var users = new List<User>();
+            _filePath = filePath;
+        }
 
-            if (!File.Exists(_filePath))
-            {
-                Console.WriteLine("Login file not found!");
-                return users;
-            }
+        // Returns the user if username/password matches; expects CSV lines: username,password,role (header OK)
+        public User? GetUser(string username, string password)
+        {
+            if (!File.Exists(_filePath)) return null;
 
-            var lines = File.ReadAllLines(_filePath).Skip(1); // skip header
-            foreach (var line in lines)
+            var lines = File.ReadAllLines(_filePath);
+            foreach (var raw in lines)
             {
-                var parts = line.Split(',');
-                if (parts.Length == 3)
+                if (string.IsNullOrWhiteSpace(raw)) continue;
+                if (raw.ToLower().StartsWith("username")) continue; // skip header
+                var parts = raw.Split(',');
+                if (parts.Length < 3) continue;
+
+                var u = parts[0].Trim();
+                var p = parts[1].Trim();
+                var r = parts[2].Trim();
+
+                if (string.Equals(u, username, StringComparison.OrdinalIgnoreCase) && p == password)
                 {
-                    users.Add(new User(parts[0], parts[1], parts[2]));
+                    return new User(u, p, r);
                 }
             }
 
-            return users;
-        }
-
-        public User? GetUser(string username, string password)
-        {
-            return GetAllUsers()
-                .FirstOrDefault(u => u.Username == username && u.Password == password);
+            return null;
         }
     }
 }

@@ -13,23 +13,33 @@ namespace HangmanGame.Model
             _filePath = filePath;
         }
 
-        public List<string> GetWords(string difficulty)
+        public List<string> GetWordsByDifficulty(string difficulty)
         {
-            var words = new List<string>();
+            var result = new List<string>();
+            if (!File.Exists(_filePath)) return result;
 
-            if (!File.Exists(_filePath))
-                return words;
+            var lines = File.ReadAllLines(_filePath);
+            int start = 0;
+            if (lines.Length > 0 && lines[0].ToLower().Contains("difficulty")) start = 1;
 
-            foreach (var line in File.ReadAllLines(_filePath))
+            for (int i = start; i < lines.Length; i++)
             {
-                var parts = line.Split(',');
-                if (parts.Length == 2 && parts[0].Trim().Equals(difficulty, StringComparison.OrdinalIgnoreCase))
+                var raw = lines[i];
+                if (string.IsNullOrWhiteSpace(raw)) continue;
+
+                var parts = raw.Split(',');
+                if (parts.Length < 2) continue;
+
+                var diff = parts[0].Trim();
+                var word = parts[1].Trim();
+
+                if (string.Equals(diff, difficulty, StringComparison.OrdinalIgnoreCase))
                 {
-                    words.Add(parts[1].Trim());
+                    result.Add(word);
                 }
             }
 
-            return words;
+            return result;
         }
     }
 }

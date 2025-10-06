@@ -1,26 +1,33 @@
-using HangmanGame.Controller;
+using System;
 using HangmanGame.Model;
 
 namespace HangmanGame.View
 {
     public class LoginView
     {
-        private readonly UserController userController;
-
-        public LoginView()
-        {
-            userController = new UserController();
-        }
-
-        public User? ShowLogin()
+        public (string username, string password) PromptCredentials()
         {
             Console.Write("Enter username: ");
-            string username = Console.ReadLine() ?? "";
+            string u = Console.ReadLine() ?? "";
 
             Console.Write("Enter password: ");
-            string password = Console.ReadLine() ?? "";
+            string p = Console.ReadLine() ?? "";
 
-            return userController.Login(username, password);
+            return (u.Trim(), p);
+        }
+
+        public void ShowLoginSuccess(User user)
+        {
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine($"Login successful! Role: {user.Role}");
+            Console.ResetColor();
+        }
+
+        public void ShowLoginFailure()
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("Invalid credentials. Try again.");
+            Console.ResetColor();
         }
     }
 }
