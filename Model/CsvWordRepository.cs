@@ -1,27 +1,35 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 namespace HangmanGame.Model
 {
     public class CsvWordRepository : IWordRepository
     {
-        private readonly string filePath;
+        private readonly string _filePath;
 
-        public CsvWordRepository(string path)
+        public CsvWordRepository(string filePath)
         {
-            filePath = path;
+            _filePath = filePath;
         }
 
-        public IEnumerable<Word> GetWordsByDifficulty(string difficulty)
+        public List<string> GetWords(string difficulty)
         {
-            if (!File.Exists(filePath)) return Enumerable.Empty<Word>();
+            var words = new List<string>();
 
-            var lines = File.ReadAllLines(filePath).Skip(1); // skip header
-            return lines
-                .Select(line => line.Split(','))
-                .Where(parts => parts.Length == 2 && parts[1].Equals(difficulty, StringComparison.OrdinalIgnoreCase))
-                .Select(parts => new Word(parts[0], parts[1]));
+            if (!File.Exists(_filePath))
+                return words;
+
+            foreach (var line in File.ReadAllLines(_filePath))
+            {
+                var parts = line.Split(',');
+                if (parts.Length == 2 && parts[0].Trim().Equals(difficulty, StringComparison.OrdinalIgnoreCase))
+                {
+                    words.Add(parts[1].Trim());
+                }
+            }
+
+            return words;
         }
     }
 }

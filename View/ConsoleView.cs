@@ -13,7 +13,15 @@ namespace HangmanGame.View
         public char GetGuess()
         {
             Console.Write("Enter a letter: ");
-            return Console.ReadLine()?.ToLower()[0] ?? ' ';
+            string? input = Console.ReadLine();
+
+            if (string.IsNullOrWhiteSpace(input) || input.Length != 1 || !char.IsLetter(input[0]))
+            {
+                Console.WriteLine("Invalid input. Please enter a single letter.");
+                return ' ';
+            }
+
+            return char.ToLower(input[0]);
         }
 
         public void Update(GameState state)
