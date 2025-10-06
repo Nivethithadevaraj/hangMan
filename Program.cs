@@ -11,8 +11,6 @@ namespace HangmanGame
         static void Main(string[] args)
         {
             Console.WriteLine("=== Welcome to Hangman ===");
-
-            // 1) Login / Register
             var loginCsv = Path.Combine("Data", "login.csv");
             var userRepo = new UserRepository(loginCsv);
             var loginView = new LoginView();
@@ -32,15 +30,14 @@ namespace HangmanGame
                     {
                         var (ru, rp) = loginView.PromptRegistration();
 
-                        // Save as normal user
                         userRepo.AddUser(new User(ru, rp, "user"));
                         Console.WriteLine("Registration successful! You can now login.");
 
-                        user = new User(ru, rp, "user"); // auto-login
+                        user = new User(ru, rp, "user"); 
                     }
                     else if (choice == "L")
                     {
-                        continue; // loop back to login
+                        continue; 
                     }
                     else
                     {
@@ -50,7 +47,7 @@ namespace HangmanGame
                 else
                 {
                     loginView.ShowLoginSuccess(user);
-                    Console.Clear(); // clears screen after successful login
+                    Console.Clear();
                 }
             }
 

@@ -14,7 +14,6 @@ namespace HangmanGame.Controller
             _wordRepo = wordRepo ?? throw new ArgumentNullException(nameof(wordRepo));
         }
 
-        // Called by Program.cs: ShowMenu()
         public void ShowMenu()
         {
             while (true)

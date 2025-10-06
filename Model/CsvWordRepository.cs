@@ -18,7 +18,6 @@ namespace HangmanGame.Model
 
             if (!File.Exists(_filePath))
             {
-                // create with header
                 File.WriteAllText(_filePath, "difficulty,word\n");
             }
         }
@@ -82,7 +81,6 @@ namespace HangmanGame.Model
 
         private void SaveAll(IEnumerable<Word> words)
         {
-            // sort words: easy -> medium -> hard, then alphabetically inside each
             var ordered = words
                 .OrderBy(w => DifficultyOrder(w.Difficulty))
                 .ThenBy(w => w.Text)

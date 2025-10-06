@@ -13,7 +13,6 @@ namespace HangmanGame.Model
             _filePath = filePath;
         }
 
-        // Returns the user if username/password matches; expects CSV lines: username,password,role (header OK)
         public User? GetUser(string username, string password)
         {
             if (!File.Exists(_filePath)) return null;
@@ -31,7 +30,6 @@ namespace HangmanGame.Model
                 var p = parts[1].Trim();
                 var r = parts[2].Trim();
 
-                // Case-sensitive check
                 if (u == username && p == password)
                 {
                     return new User(u, p, r);
@@ -41,7 +39,6 @@ namespace HangmanGame.Model
             return null;
         }
 
-        // Add a new user, or if username exists, auto-login with existing one
         public User? AddUser(User user)
         {
             if (!File.Exists(_filePath))
@@ -63,15 +60,12 @@ namespace HangmanGame.Model
                 var existingPassword = parts[1].Trim();
                 var existingRole = parts[2].Trim();
 
-                // Case-sensitive duplicate check
                 if (existingUsername == user.Username)
                 {
                     Console.WriteLine($"User '{user.Username}' is already registered. Logging you in...");
-                    return new User(existingUsername, existingPassword, existingRole); // auto-login
+                    return new User(existingUsername, existingPassword, existingRole); 
                 }
             }
-
-            // Otherwise append new user
             File.AppendAllText(_filePath, $"{user.Username},{user.Password},{user.Role}{Environment.NewLine}");
             Console.WriteLine("Registration successful! Logging you in...");
             return user;

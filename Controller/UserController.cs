@@ -9,7 +9,6 @@ namespace HangmanGame.Controller
 
         public UserController()
         {
-            // point to Data/login.csv
             var filePath = Path.Combine("Data", "login.csv");
             _repo = new UserRepository(filePath);
         }

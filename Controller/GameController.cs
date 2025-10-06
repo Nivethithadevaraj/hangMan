@@ -15,10 +15,9 @@ namespace HangmanGame.Controller
             _view = view;
         }
 
-        // Start and run the game loop; throws up to caller if StartNewGame fails
         public void StartGame(string difficulty)
         {
-            var state = _engine.StartNewGame(difficulty); // will throw if no words
+            var state = _engine.StartNewGame(difficulty);
             _view.ShowStart(state);
 
             while (!state.IsGameOver())

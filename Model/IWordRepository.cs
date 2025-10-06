@@ -4,7 +4,6 @@ namespace HangmanGame.Model
 {
     public interface IWordRepository
     {
-        // Used by GameEngine (returns the plain words)
         List<string> GetWordsByDifficulty(string difficulty);
 
         // Admin CRUD operations

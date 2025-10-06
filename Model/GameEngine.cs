@@ -15,7 +15,6 @@ namespace HangmanGame.Model
             _wordRepository = repo;
         }
 
-        // Starts a new game for the given difficulty (throws if no words)
         public GameState StartNewGame(string difficulty)
         {
             var list = _wordRepository.GetWordsByDifficulty(difficulty ?? "");

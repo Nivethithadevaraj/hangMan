@@ -26,7 +26,6 @@ namespace HangmanGame.View
             Console.WriteLine($"Login successful! Welcome {user.Username} ({user.Role})");
         }
 
-        // ?? Added here: registration prompt
         public (string Username, string Password) PromptRegistration()
         {
             Console.WriteLine("=== Register New User ===");
