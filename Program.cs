@@ -12,8 +12,8 @@ namespace HangmanGame
         {
             Console.WriteLine("=== Welcome to Hangman ===");
 
-            // 1) Login
-            var loginCsv = Path.Combine("Data", "login.csv"); // uses your CSV
+            // 1) Login / Register
+            var loginCsv = Path.Combine("Data", "login.csv");
             var userRepo = new UserRepository(loginCsv);
             var loginView = new LoginView();
             User? user = null;
@@ -22,14 +22,41 @@ namespace HangmanGame
             {
                 var (u, p) = loginView.PromptCredentials();
                 user = userRepo.GetUser(u, p);
-                if (user == null) loginView.ShowLoginFailure();
-                else loginView.ShowLoginSuccess(user);
+
+                if (user == null)
+                {
+                    Console.WriteLine("Invalid credentials. Try again (L) or Register (R)?");
+                    string choice = (Console.ReadLine() ?? "").Trim().ToUpper();
+
+                    if (choice == "R")
+                    {
+                        var (ru, rp) = loginView.PromptRegistration();
+
+                        // Save as normal user
+                        userRepo.AddUser(new User(ru, rp, "user"));
+                        Console.WriteLine("Registration successful! You can now login.");
+
+                        user = new User(ru, rp, "user"); // auto-login
+                    }
+                    else if (choice == "L")
+                    {
+                        continue; // loop back to login
+                    }
+                    else
+                    {
+                        Console.WriteLine("Invalid option. Please choose L or R.");
+                    }
+                }
+                else
+                {
+                    loginView.ShowLoginSuccess(user);
+                    Console.Clear(); // clears screen after successful login
+                }
             }
 
             // 2) Role check
             if (user.Role.Equals("admin", StringComparison.OrdinalIgnoreCase))
             {
-                // Admin goes to CRUD menu
                 var wordsCsv = Path.Combine("Data", "words.csv");
                 var wordRepo = new CsvWordRepository(wordsCsv);
                 var adminController = new AdminController(wordRepo);
@@ -38,7 +65,7 @@ namespace HangmanGame
             }
             else
             {
-                // Normal user plays the game
+                // 3) Normal user plays the game
                 string difficulty = "";
                 while (true)
                 {
@@ -48,25 +75,37 @@ namespace HangmanGame
                     Console.WriteLine("Invalid difficulty. Please type exactly: easy, medium, or hard.");
                 }
 
-                var wordsCsv = Path.Combine("Data", "words.csv"); // expected lines: difficulty,word
+                var wordsCsv = Path.Combine("Data", "words.csv");
                 var wordRepo = new CsvWordRepository(wordsCsv);
                 var engine = new GameEngine(wordRepo);
                 var consoleView = new ConsoleView();
                 var controller = new GameController(engine, consoleView);
 
-                // Try starting game (if difficulty has no words, let user pick again)
-                while (true)
+                bool playAgain = true;
+                while (playAgain)
                 {
                     try
                     {
                         controller.StartGame(difficulty);
-                        break; // game finished normally
                     }
                     catch (InvalidOperationException ex)
                     {
                         Console.WriteLine(ex.Message);
                         Console.Write("Please choose another difficulty (easy/medium/hard): ");
                         difficulty = (Console.ReadLine() ?? "").Trim().ToLower();
+                        continue;
+                    }
+
+                    Console.WriteLine("Do you want to play again? (Y/N): ");
+                    string ans = (Console.ReadLine() ?? "").Trim().ToUpper();
+                    if (ans == "Y")
+                    {
+                        Console.Clear();
+                        continue;
+                    }
+                    else
+                    {
+                        playAgain = false;
                     }
                 }
 

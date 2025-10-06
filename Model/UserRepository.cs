@@ -12,7 +12,7 @@ namespace HangmanGame.Model
             _filePath = filePath;
         }
 
-        // Returns the user if username/password matches; expects CSV lines: username,password,role (header OK)
+        // Returns the user if username/password matches exactly (case-sensitive)
         public User? GetUser(string username, string password)
         {
             if (!File.Exists(_filePath)) return null;
@@ -21,7 +21,7 @@ namespace HangmanGame.Model
             foreach (var raw in lines)
             {
                 if (string.IsNullOrWhiteSpace(raw)) continue;
-                if (raw.ToLower().StartsWith("username")) continue; // skip header
+                if (raw.StartsWith("username", StringComparison.OrdinalIgnoreCase)) continue; // skip header
                 var parts = raw.Split(',');
                 if (parts.Length < 3) continue;
 
@@ -29,13 +29,29 @@ namespace HangmanGame.Model
                 var p = parts[1].Trim();
                 var r = parts[2].Trim();
 
-                if (string.Equals(u, username, StringComparison.OrdinalIgnoreCase) && p == password)
+                // case-sensitive match
+                if (u == username && p == password)
                 {
                     return new User(u, p, r);
                 }
             }
 
             return null;
+        }
+
+        // Appends a new user to the CSV
+        public void AddUser(User user)
+        {
+            bool fileExists = File.Exists(_filePath);
+
+            using (var sw = new StreamWriter(_filePath, append: true))
+            {
+                if (!fileExists)
+                {
+                    sw.WriteLine("username,password,role"); // header if new file
+                }
+                sw.WriteLine($"{user.Username},{user.Password},{user.Role}");
+            }
         }
     }
 }
