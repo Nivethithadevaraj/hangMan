@@ -57,7 +57,9 @@ namespace HangmanGame.Model
         public void AddWord(Word word)
         {
             if (word == null) throw new ArgumentNullException(nameof(word));
-            File.AppendAllText(_filePath, $"{word.Difficulty},{word.Text}\n");
+            var words = GetAllWords();
+            words.Add(word);
+            SaveAll(words);
         }
 
         public void UpdateWord(Word oldWord, Word newWord)
@@ -80,9 +82,26 @@ namespace HangmanGame.Model
 
         private void SaveAll(IEnumerable<Word> words)
         {
+            // sort words: easy -> medium -> hard, then alphabetically inside each
+            var ordered = words
+                .OrderBy(w => DifficultyOrder(w.Difficulty))
+                .ThenBy(w => w.Text)
+                .ToList();
+
             var lines = new List<string> { "difficulty,word" };
-            lines.AddRange(words.Select(w => $"{w.Difficulty},{w.Text}"));
+            lines.AddRange(ordered.Select(w => $"{w.Difficulty},{w.Text}"));
             File.WriteAllLines(_filePath, lines);
+        }
+
+        private int DifficultyOrder(string diff)
+        {
+            return diff.ToLower() switch
+            {
+                "easy" => 1,
+                "medium" => 2,
+                "hard" => 3,
+                _ => 4
+            };
         }
     }
 }
