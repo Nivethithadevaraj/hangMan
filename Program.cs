@@ -1,5 +1,6 @@
 ﻿using HangmanGame.View;
 using HangmanGame.Model;
+using HangmanGame.Controller;
 
 class Program
 {
@@ -16,17 +17,11 @@ class Program
             }
             else
             {
-                Console.WriteLine("Game starts here...");
-
-                // ✅ Phase 2: test loading words
+                var view = new ConsoleView();
                 var wordRepo = new CsvWordRepository();
-                var words = wordRepo.GetAllWords();
+                var gameController = new GameController(view, wordRepo);
 
-                Console.WriteLine("\nWords loaded from CSV:");
-                foreach (var word in words)
-                {
-                    Console.WriteLine($"{word.Text} ({word.Difficulty})");
-                }
+                gameController.StartGame();
             }
         }
     }
