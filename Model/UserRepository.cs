@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 
 namespace HangmanGame.Model
 {
@@ -12,7 +13,7 @@ namespace HangmanGame.Model
             _filePath = filePath;
         }
 
-        // Returns the user if username/password matches exactly (case-sensitive)
+        // Returns the user if username/password matches; expects CSV lines: username,password,role (header OK)
         public User? GetUser(string username, string password)
         {
             if (!File.Exists(_filePath)) return null;
@@ -22,6 +23,7 @@ namespace HangmanGame.Model
             {
                 if (string.IsNullOrWhiteSpace(raw)) continue;
                 if (raw.StartsWith("username", StringComparison.OrdinalIgnoreCase)) continue; // skip header
+
                 var parts = raw.Split(',');
                 if (parts.Length < 3) continue;
 
@@ -29,7 +31,7 @@ namespace HangmanGame.Model
                 var p = parts[1].Trim();
                 var r = parts[2].Trim();
 
-                // case-sensitive match
+                // Case-sensitive check
                 if (u == username && p == password)
                 {
                     return new User(u, p, r);
@@ -39,19 +41,40 @@ namespace HangmanGame.Model
             return null;
         }
 
-        // Appends a new user to the CSV
-        public void AddUser(User user)
+        // Add a new user, or if username exists, auto-login with existing one
+        public User? AddUser(User user)
         {
-            bool fileExists = File.Exists(_filePath);
-
-            using (var sw = new StreamWriter(_filePath, append: true))
+            if (!File.Exists(_filePath))
             {
-                if (!fileExists)
-                {
-                    sw.WriteLine("username,password,role"); // header if new file
-                }
-                sw.WriteLine($"{user.Username},{user.Password},{user.Role}");
+                File.WriteAllText(_filePath, "username,password,role" + Environment.NewLine);
             }
+
+            var lines = File.ReadAllLines(_filePath);
+
+            foreach (var line in lines)
+            {
+                if (string.IsNullOrWhiteSpace(line)) continue;
+                if (line.StartsWith("username", StringComparison.OrdinalIgnoreCase)) continue;
+
+                var parts = line.Split(',');
+                if (parts.Length < 3) continue;
+
+                var existingUsername = parts[0].Trim();
+                var existingPassword = parts[1].Trim();
+                var existingRole = parts[2].Trim();
+
+                // Case-sensitive duplicate check
+                if (existingUsername == user.Username)
+                {
+                    Console.WriteLine($"User '{user.Username}' is already registered. Logging you in...");
+                    return new User(existingUsername, existingPassword, existingRole); // auto-login
+                }
+            }
+
+            // Otherwise append new user
+            File.AppendAllText(_filePath, $"{user.Username},{user.Password},{user.Role}{Environment.NewLine}");
+            Console.WriteLine("Registration successful! Logging you in...");
+            return user;
         }
     }
 }
