@@ -2,13 +2,15 @@ namespace HangmanGame.Model
 {
     public class Word
     {
-        public string Text { get; }
         public string Difficulty { get; }
+        public string Text { get; }
 
-        public Word(string text, string difficulty)
+        public Word(string difficulty, string text)
         {
-            Text = text;
-            Difficulty = difficulty;
+            Difficulty = difficulty.ToLower();
+            Text = text.ToLower();
         }
+
+        public override string ToString() => $"{Difficulty},{Text}";
     }
 }
