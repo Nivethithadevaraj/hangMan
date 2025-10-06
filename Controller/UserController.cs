@@ -4,16 +4,16 @@ namespace HangmanGame.Controller
 {
     public class UserController
     {
-        private readonly UserRepository _userRepository;
+        private readonly UserRepository userRepo;
 
         public UserController()
         {
-            _userRepository = new UserRepository();
+            userRepo = new UserRepository();
         }
 
         public User? Login(string username, string password)
         {
-            return _userRepository.GetUser(username, password);
+            return userRepo.GetUser(username, password);
         }
     }
 }

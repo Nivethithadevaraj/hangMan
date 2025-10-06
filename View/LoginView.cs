@@ -1,32 +1,26 @@
-using System;
+using HangmanGame.Controller;
 using HangmanGame.Model;
 
 namespace HangmanGame.View
 {
     public class LoginView
     {
+        private readonly UserController userController;
+
+        public LoginView()
+        {
+            userController = new UserController();
+        }
+
         public User? ShowLogin()
         {
-            Console.WriteLine("=== Welcome to Hangman ===");
             Console.Write("Enter username: ");
-            var username = Console.ReadLine();
+            string username = Console.ReadLine() ?? "";
 
             Console.Write("Enter password: ");
-            var password = Console.ReadLine();
+            string password = Console.ReadLine() ?? "";
 
-            var repo = new UserRepository();
-            var user = repo.GetUser(username ?? "", password ?? "");
-
-            if (user != null)
-            {
-                Console.WriteLine($"Login successful! Role: {user.Role}");
-            }
-            else
-            {
-                Console.WriteLine("Invalid credentials!");
-            }
-
-            return user;
+            return userController.Login(username, password);
         }
     }
 }

@@ -1,55 +1,32 @@
-using System;
-using HangmanGame.Game;
+using HangmanGame.Model;
 using HangmanGame.View;
 
 namespace HangmanGame.Controller
 {
     public class GameController
     {
-        private GameEngine _engine;
-        private ConsoleView _view;
+        private readonly GameEngine gameEngine;
+        private readonly ConsoleView gameView;
 
         public GameController(GameEngine engine, ConsoleView view)
         {
-            _engine = engine;
-            _view = view;
+            gameEngine = engine;
+            gameView = view;
         }
 
-        public void Run()
+        public void StartGame(string difficulty)
         {
-            Console.WriteLine("=== Welcome to Hangman ===");
-            Console.Write("Enter username: ");
-            string username = Console.ReadLine();
-            Console.Write("Enter password: ");
-            string password = Console.ReadLine();
+            var state = gameEngine.StartNewGame(difficulty);
+            gameView.ShowStart(state);
 
-            Console.WriteLine("Login successful! Role: user");
-            Console.Write("Choose difficulty: easy / medium / hard: ");
-            string diff = Console.ReadLine();
-
-            _engine.StartNewGame(diff);
-            GameState state = _engine.GetState();
-
-            while (!_engine.IsGameOver())
+            while (!gameEngine.IsGameOver())
             {
-                _view.DisplayMaskedWord(state);
-                _view.DisplayAttempts(state);
-
-                Console.Write("Enter a letter: ");
-                char guess = Console.ReadLine()[0];
-
-                bool correct = _engine.MakeGuess(guess);
-
-                if (correct)
-                    _view.DisplayMessage("Correct!");
-                else
-                    _view.DisplayMessage("Wrong!");
+                char guess = gameView.GetGuess();
+                gameEngine.MakeGuess(guess);
+                gameView.Update(state);
             }
 
-            if (_engine.IsWin())
-                _view.DisplayMessage("You win!");
-            else
-                _view.DisplayMessage("Game Over!");
+            gameView.ShowResult(gameEngine.IsWin(), state.CurrentWord);
         }
     }
 }

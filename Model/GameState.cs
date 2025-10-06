@@ -1,28 +1,22 @@
-namespace HangmanGame.Game
+using System.Collections.Generic;
+using System.Linq;
+
+namespace HangmanGame.Model
 {
     public class GameState
     {
-        public string Word { get; private set; }
-        public HashSet<char> CorrectGuesses { get; private set; }
-        public HashSet<char> WrongGuesses { get; private set; }
-        public int AttemptsLeft { get; set; }
+        public string CurrentWord { get; set; } = string.Empty;
+        public HashSet<char> GuessedLetters { get; } = new HashSet<char>();
+        public int AttemptsLeft { get; set; } = 3;
 
-        public GameState(string word, int attempts)
+        public string GetWordProgress()
         {
-            Word = word.ToUpper();
-            AttemptsLeft = attempts;
-            CorrectGuesses = new HashSet<char>();
-            WrongGuesses = new HashSet<char>();
-        }
-
-        public string GetMaskedWord()
-        {
-            return string.Join(" ", Word.Select(c => CorrectGuesses.Contains(c) ? c : '_'));
+            return string.Join(" ", CurrentWord.Select(c => GuessedLetters.Contains(c) ? c : '_'));
         }
 
         public bool IsWordGuessed()
         {
-            return Word.All(c => CorrectGuesses.Contains(c));
+            return CurrentWord.All(c => GuessedLetters.Contains(c));
         }
     }
 }

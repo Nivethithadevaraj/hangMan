@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,29 +6,22 @@ namespace HangmanGame.Model
 {
     public class CsvWordRepository : IWordRepository
     {
-        private readonly string _filePath = Path.Combine("Data", "words.csv");
+        private readonly string filePath;
 
-        public List<Word> GetWordsByDifficulty(string difficulty)
+        public CsvWordRepository(string path)
         {
-            var words = new List<Word>();
+            filePath = path;
+        }
 
-            if (!File.Exists(_filePath))
-            {
-                Console.WriteLine("Words file not found!");
-                return words;
-            }
+        public IEnumerable<Word> GetWordsByDifficulty(string difficulty)
+        {
+            if (!File.Exists(filePath)) return Enumerable.Empty<Word>();
 
-            var lines = File.ReadAllLines(_filePath).Skip(1); // skip header
-            foreach (var line in lines)
-            {
-                var parts = line.Split(',');
-                if (parts.Length == 2)
-                {
-                    words.Add(new Word(parts[0], parts[1]));
-                }
-            }
-
-            return words.Where(w => w.Difficulty.Equals(difficulty, StringComparison.OrdinalIgnoreCase)).ToList();
+            var lines = File.ReadAllLines(filePath).Skip(1); // skip header
+            return lines
+                .Select(line => line.Split(','))
+                .Where(parts => parts.Length == 2 && parts[1].Equals(difficulty, StringComparison.OrdinalIgnoreCase))
+                .Select(parts => new Word(parts[0], parts[1]));
         }
     }
 }

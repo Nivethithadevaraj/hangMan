@@ -1,54 +1,51 @@
 using System;
+using System.Linq;
 
-namespace HangmanGame.Game
+namespace HangmanGame.Model
 {
     public class GameEngine
     {
-        private GameState _state;
-        private string[] _words = { "CAT", "DOG", "APPLE", "HOUSE" };
+        private readonly IWordRepository wordRepository;
+        private GameState gameState=new GameState();
 
-        public GameEngine()
+        public GameEngine(IWordRepository repo)
         {
-            _state = new GameState("CAT", 3);
+            wordRepository = repo;
         }
 
-        public void StartNewGame(string difficulty)
+        public GameState StartNewGame(string difficulty)
         {
-            string word = _words[new Random().Next(_words.Length)];
-            _state = new GameState(word, 3); // always 3 attempts
-        }
+            var words = wordRepository.GetWordsByDifficulty(difficulty).ToList();
+            var random = new Random();
+            string chosen = words[random.Next(words.Count)].Text;
 
-        public GameState GetState()
-        {
-            return _state;
-        }
-
-        public bool MakeGuess(char guess)
-        {
-            guess = Char.ToUpper(guess);
-
-            if (_state.Word.Contains(guess))
+            gameState = new GameState
             {
-                _state.CorrectGuesses.Add(guess);
-                _state.AttemptsLeft = 3; // restore on correct guess
-                return true;
+                CurrentWord = chosen
+            };
+
+            return gameState;
+        }
+
+        public GameState GetState() => gameState;
+
+        public void MakeGuess(char guess)
+        {
+            if (gameState.GuessedLetters.Contains(guess)) return;
+
+            if (gameState.CurrentWord.Contains(guess))
+            {
+                gameState.GuessedLetters.Add(guess);
+                gameState.AttemptsLeft = 3; // restore
             }
             else
             {
-                _state.WrongGuesses.Add(guess);
-                _state.AttemptsLeft--; // reduce on wrong guess
-                return false;
+                gameState.AttemptsLeft--;
             }
         }
 
-        public bool IsGameOver()
-        {
-            return _state.AttemptsLeft <= 0 || _state.IsWordGuessed();
-        }
+        public bool IsGameOver() => gameState.AttemptsLeft <= 0 || gameState.IsWordGuessed();
 
-        public bool IsWin()
-        {
-            return _state.IsWordGuessed();
-        }
+        public bool IsWin() => gameState.IsWordGuessed();
     }
 }

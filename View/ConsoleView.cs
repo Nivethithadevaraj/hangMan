@@ -1,23 +1,33 @@
-using System;
-using HangmanGame.Game;
+using HangmanGame.Model;
 
 namespace HangmanGame.View
 {
     public class ConsoleView
     {
-        public void DisplayMaskedWord(GameState state)
+        public void ShowStart(GameState state)
         {
-            Console.WriteLine(state.GetMaskedWord());
+            Console.WriteLine($"Word selected! Attempts left: {state.AttemptsLeft}");
+            Console.WriteLine(state.GetWordProgress());
         }
 
-        public void DisplayAttempts(GameState state)
+        public char GetGuess()
         {
+            Console.Write("Enter a letter: ");
+            return Console.ReadLine()?.ToLower()[0] ?? ' ';
+        }
+
+        public void Update(GameState state)
+        {
+            Console.WriteLine(state.GetWordProgress());
             Console.WriteLine($"Attempts left: {state.AttemptsLeft}");
         }
 
-        public void DisplayMessage(string message)
+        public void ShowResult(bool win, string word)
         {
-            Console.WriteLine(message);
+            if (win)
+                Console.WriteLine("?? You won!");
+            else
+                Console.WriteLine($"? Game Over! The word was: {word}");
         }
     }
 }
