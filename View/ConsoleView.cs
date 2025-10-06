@@ -102,7 +102,9 @@ namespace HangmanGame.View
    |  |
   / \ |
 =========
-YAYYY YOU WON! ??
+****************
+YAYYY YOU WON!
+****************
 ");
             Console.ResetColor();
         }
@@ -118,7 +120,9 @@ YAYYY YOU WON! ??
  / \  |
       |
 =========
-DIED... YOU LOSE ??
+*****************
+DIED... YOU LOSE
+*****************
 ");
             Console.ResetColor();
             Console.WriteLine($"The word was: {word}");
