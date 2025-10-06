@@ -9,7 +9,7 @@ namespace HangmanGame.Model
     {
         private readonly string _filePath = Path.Combine("Data", "words.csv");
 
-        public List<Word> GetAllWords()
+        public List<Word> GetWordsByDifficulty(string difficulty)
         {
             var words = new List<Word>();
 
@@ -29,7 +29,7 @@ namespace HangmanGame.Model
                 }
             }
 
-            return words;
+            return words.Where(w => w.Difficulty.Equals(difficulty, StringComparison.OrdinalIgnoreCase)).ToList();
         }
     }
 }

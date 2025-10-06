@@ -1,42 +1,54 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
-namespace HangmanGame.Model
+namespace HangmanGame.Game
 {
     public class GameEngine
     {
-        private static GameEngine? _instance;
-        private readonly IWordRepository _wordRepo;
+        private GameState _state;
+        private string[] _words = { "CAT", "DOG", "APPLE", "HOUSE" };
 
-        private GameEngine(IWordRepository wordRepo)
+        public GameEngine()
         {
-            _wordRepo = wordRepo;
+            _state = new GameState("CAT", 3);
         }
 
-        // Singleton
-        public static GameEngine GetInstance(IWordRepository wordRepo)
+        public void StartNewGame(string difficulty)
         {
-            if (_instance == null)
-                _instance = new GameEngine(wordRepo);
-            return _instance;
+            string word = _words[new Random().Next(_words.Length)];
+            _state = new GameState(word, 3); // always 3 attempts
         }
 
-        public GameState StartNewGame(string difficulty)
+        public GameState GetState()
         {
-            var words = _wordRepo.GetAllWords()
-                .Where(w => w.Difficulty.Equals(difficulty, StringComparison.OrdinalIgnoreCase))
-                .ToList();
+            return _state;
+        }
 
-            if (words.Count == 0)
+        public bool MakeGuess(char guess)
+        {
+            guess = Char.ToUpper(guess);
+
+            if (_state.Word.Contains(guess))
             {
-                throw new Exception("No words available for this difficulty!");
+                _state.CorrectGuesses.Add(guess);
+                _state.AttemptsLeft = 3; // restore on correct guess
+                return true;
             }
+            else
+            {
+                _state.WrongGuesses.Add(guess);
+                _state.AttemptsLeft--; // reduce on wrong guess
+                return false;
+            }
+        }
 
-            var random = new Random();
-            var selectedWord = words[random.Next(words.Count)];
+        public bool IsGameOver()
+        {
+            return _state.AttemptsLeft <= 0 || _state.IsWordGuessed();
+        }
 
-            return new GameState(selectedWord, 3); // start with 3 attempts
+        public bool IsWin()
+        {
+            return _state.IsWordGuessed();
         }
     }
 }

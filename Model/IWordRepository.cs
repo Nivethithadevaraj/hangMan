@@ -4,6 +4,6 @@ namespace HangmanGame.Model
 {
     public interface IWordRepository
     {
-        List<Word> GetAllWords();
+        List<Word> GetWordsByDifficulty(string difficulty);
     }
 }

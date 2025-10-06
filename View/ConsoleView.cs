@@ -1,21 +1,23 @@
 using System;
-using HangmanGame.Model;
+using HangmanGame.Game;
 
 namespace HangmanGame.View
 {
     public class ConsoleView
     {
-        public string ChooseDifficulty()
+        public void DisplayMaskedWord(GameState state)
         {
-            Console.WriteLine("Choose difficulty: easy / medium / hard");
-            return Console.ReadLine() ?? "easy";
+            Console.WriteLine(state.GetMaskedWord());
         }
 
-        public void ShowGameStart(GameState state)
+        public void DisplayAttempts(GameState state)
         {
-            Console.WriteLine($"Word selected! Difficulty: {state.CurrentWord.Difficulty}");
-            Console.WriteLine(state.GetWordProgress());
             Console.WriteLine($"Attempts left: {state.AttemptsLeft}");
+        }
+
+        public void DisplayMessage(string message)
+        {
+            Console.WriteLine(message);
         }
     }
 }

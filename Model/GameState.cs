@@ -1,31 +1,28 @@
-using System.Collections.Generic;
-
-namespace HangmanGame.Model
+namespace HangmanGame.Game
 {
     public class GameState
     {
-        public Word CurrentWord { get; private set; }
+        public string Word { get; private set; }
+        public HashSet<char> CorrectGuesses { get; private set; }
+        public HashSet<char> WrongGuesses { get; private set; }
         public int AttemptsLeft { get; set; }
-        public List<char> GuessedLetters { get; private set; }
-        public bool IsGameOver { get; set; }
 
-        public GameState(Word word, int attempts)
+        public GameState(string word, int attempts)
         {
-            CurrentWord = word;
+            Word = word.ToUpper();
             AttemptsLeft = attempts;
-            GuessedLetters = new List<char>();
-            IsGameOver = false;
+            CorrectGuesses = new HashSet<char>();
+            WrongGuesses = new HashSet<char>();
         }
 
-        // Helper: shows current word with blanks
-        public string GetWordProgress()
+        public string GetMaskedWord()
         {
-            var display = "";
-            foreach (var ch in CurrentWord.Text)
-            {
-                display += (GuessedLetters.Contains(ch)) ? $"{ch} " : "_ ";
-            }
-            return display.Trim();
+            return string.Join(" ", Word.Select(c => CorrectGuesses.Contains(c) ? c : '_'));
+        }
+
+        public bool IsWordGuessed()
+        {
+            return Word.All(c => CorrectGuesses.Contains(c));
         }
     }
 }

@@ -2,9 +2,9 @@ namespace HangmanGame.Model
 {
     public class User
     {
-        public string Username { get; set; }
-        public string Password { get; set; }
-        public string Role { get; set; }  // "admin" or "user"
+        public string Username { get; }
+        public string Password { get; }
+        public string Role { get; }
 
         public User(string username, string password, string role)
         {

@@ -1,28 +1,15 @@
-﻿using HangmanGame.View;
-using HangmanGame.Model;
-using HangmanGame.Controller;
+﻿using HangmanGame.Controller;
+using HangmanGame.Game;
+using HangmanGame.View;
 
 class Program
 {
-    static void Main(string[] args)
+    static void Main()
     {
-        var loginView = new LoginView();
-        User? loggedInUser = loginView.ShowLogin();
+        var engine = new GameEngine();
+        var view = new ConsoleView();
+        var controller = new GameController(engine, view);
 
-        if (loggedInUser != null)
-        {
-            if (loggedInUser.Role == "admin")
-            {
-                Console.WriteLine("Admin menu will go here...");
-            }
-            else
-            {
-                var view = new ConsoleView();
-                var wordRepo = new CsvWordRepository();
-                var gameController = new GameController(view, wordRepo);
-
-                gameController.StartGame();
-            }
-        }
+        controller.Run();
     }
 }
