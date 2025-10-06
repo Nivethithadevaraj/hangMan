@@ -1,0 +1,30 @@
+# Ignore build folders
+bin/
+obj/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# VS Code & Visual Studio settings
+.vscode/
+.vs/
+
+# Logs
+*.log
+
+# Auto-generated files
+*.dll
+*.exe
+*.pdb
+
+# Temporary files
+*.tmp
+*.cache
+*.db
+*.lock
+
+# Other IDE-specific
+*.swp
