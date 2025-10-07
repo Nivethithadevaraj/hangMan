@@ -31,8 +31,12 @@ namespace HangmanGame.Model
         {
             guess = char.ToLower(guess);
 
-            if (CorrectGuesses.Contains(guess))
-                return true;
+            // ? Already guessed check
+            if (CorrectGuesses.Contains(guess) || WrongGuesses.Contains(guess))
+            {
+                Console.WriteLine("Already tried, enter different letter.");
+                return false; // do not reduce attempts
+            }
 
             if (CurrentWord.Contains(guess))
             {
@@ -44,13 +48,14 @@ namespace HangmanGame.Model
                         Revealed[i] = guess;
                 }
 
-                AttemptsLeft = MaxAttempts;
-                return true;
+                return true; // correct guess
             }
-
-            WrongGuesses.Add(guess);
-            AttemptsLeft--;
-            return false;
+            else
+            {
+                WrongGuesses.Add(guess);
+                AttemptsLeft--; // reduce only for NEW wrong guess
+                return false;
+            }
         }
 
         public IEnumerable<char> GetCorrectGuesses() => CorrectGuesses;
